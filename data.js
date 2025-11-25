@@ -1,10 +1,13 @@
 // data.js
 
-// 季節区分の定義 (SEASONS定義はapp.jsに移動しました)
+// 季節区分の定義 (SEASONS定義はapp.jsにあります)
+
+// 🌟 定数定義: 断水期間を表す数値
+export const INTERVAL_WATER_STOP = 999;
 
 // 全22種の観葉植物データセット
-const PLANT_DATA = [
-    // waterIntervalDays: 推奨される水やり頻度の日数。999は断水期間を意味します。
+export const PLANT_DATA = [
+    // waterIntervalDays: 推奨される水やり頻度の日数。INTERVAL_WATER_STOP (999) は断水期間を意味します。
 
     // No. 1: コルジリネ
     {
@@ -62,7 +65,7 @@ const PLANT_DATA = [
             SPRING: { water: '土表面が乾いたらすぐ', waterIntervalDays: 10, light: 'bright-sun' },
             SUMMER: { water: '土表面が乾いたらすぐ', waterIntervalDays: 10, light: 'bright-sun' },
             AUTUMN: { water: '土表面が乾いてから2日後', waterIntervalDays: 14, light: 'bright-sun' },
-            WINTER: { water: 'ほぼ断水', waterIntervalDays: 999, light: 'bright-sun', tempRisk: '夜間窓際隔離（最低5℃確保）' }
+            WINTER: { water: 'ほぼ断水', waterIntervalDays: INTERVAL_WATER_STOP, light: 'bright-sun', tempRisk: '夜間窓際隔離（最低5℃確保）' }
         },
         maintenance: { fertilizer: '施肥不要 (または5月)', repotting: '5月〜7月', pruning: '不要' }
     },
@@ -218,13 +221,14 @@ const PLANT_DATA = [
             SPRING: { water: '土表面が乾いたらすぐ', waterIntervalDays: 7, light: 'bright-sun' },
             SUMMER: { water: '土を乾かさないように', waterIntervalDays: 5, light: 'bright-sun' },
             AUTUMN: { water: '土表面が乾いたらすぐ', waterIntervalDays: 7, light: 'bright-sun' },
-            WINTER: { water: '土中が乾いてから2日後', waterIntervalDays: 14, light: 'bright-sun', tempRisk: '夜間窓際隔離（最低5℃確保）' }
+            WINTER: { water: '土中が乾いてから2-3日後 (少量)', waterIntervalDays: 14, light: 'bright-sun', tempRisk: '夜間窓際隔離（最低5℃確保）' }
         },
         maintenance: { fertilizer: '4月, 9月', repotting: '5月〜8月', pruning: '随時 (古葉除去)' }
     },
-    // No. 19: ビカクシダ
+    // No. 19: ビカクシダ (🌟 修正: water_methodを追加)
     {
         id: 19, species: 'ビカクシダ', scientific: 'Platycerium', minTemp: 10, difficulty: '難しい', feature: '着生植物、水やり方法が特殊', img: 'staghorn_fern.jpg',
+        water_method: '水苔が乾いたら、バケツに水を張り貯水葉ごと全体を浸す（ソーキング）。',
         management: {
             SPRING: { water: '水苔が乾いたら', waterIntervalDays: 7, light: 'bright-shade' },
             SUMMER: { water: '水苔が乾いたら', waterIntervalDays: 7, light: 'bright-shade' },
@@ -253,7 +257,7 @@ const PLANT_DATA = [
             SPRING: { water: '土表面が乾いたらすぐ (完全に乾いてから)', waterIntervalDays: 10, light: 'bright-sun (屋外/風通し良く)' },
             SUMMER: { water: '土表面が乾いたらすぐ (完全に乾いてから)', waterIntervalDays: 7, light: 'bright-sun (屋外/直射日光可)' },
             AUTUMN: { water: '土表面が乾いてから2-3日後 (徐々に頻度減)', waterIntervalDays: 14, light: 'bright-sun' },
-            WINTER: { water: '**断水** (落葉時)。葉が残る場合は少量。', waterIntervalDays: 999, light: 'bright-sun', tempRisk: '厳重な温度管理（最低10℃確保）' }
+            WINTER: { water: '**断水** (落葉時)。葉が残る場合は少量。', waterIntervalDays: INTERVAL_WATER_STOP, light: 'bright-sun', tempRisk: '厳重な温度管理（最低10℃確保）' }
         },
         maintenance: { fertilizer: '5月, 8月', repotting: '5月〜7月', pruning: '5月〜9月 (樹形維持)' }
     },
