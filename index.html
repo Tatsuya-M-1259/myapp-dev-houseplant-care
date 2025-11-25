@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>観葉植物管理カルテ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+    <header>
+        <h1>🪴 My Plant Care - 観葉植物管理カルテ</h1>
+    </header>
+
+    <main class="container">
+        <section id="plant-registration" class="card primary-section">
+            <h2>🌱 新規植物の登録</h2>
+            <form id="add-plant-form">
+                <label for="plant-name">植物名 (ニックネーム):</label>
+                <input type="text" id="plant-name" required>
+                
+                <label for="species-select">植物種 (リストから選択):</label>
+                <select id="species-select" required>
+                </select>
+                
+                <label for="last-watered">直近の水やり日:</label>
+                <div class="input-with-button">
+                    <input type="date" id="last-watered" required>
+                    <button type="button" id="set-today-button" class="action-button tertiary">今日をセット</button>
+                </div>
+                
+                <p id="next-watering-preview" class="form-preview-message">植物種と水やり日を選択してください。</p>
+                
+                <label for="water-type-select">水やり内容:</label>
+                <select id="water-type-select" required>
+                    <option value="WaterOnly">水のみ</option>
+                    <option value="WaterAndFertilizer">水と液肥</option>
+                    <option value="WaterAndActivator">水と活性剤</option>
+                    <option value="WaterFertilizerAndActivator">水と液肥と活性剤</option>
+                </select>
+                
+                <button type="submit" class="action-button primary">カルテに追加</button>
+            </form>
+        </section>
+
+        <hr class="separator">
+        
+        <section id="data-management" class="card secondary-section">
+            <h2>データ管理</h2>
+            <div id="notification-control-container" class="control-group">
+            </div>
+            
+            <p id="last-update-display" class="file-name-display" style="text-align: left; margin-bottom: 15px;"></p>
+            
+            <div class="data-controls">
+                <button id="export-data-button" class="action-button secondary">📤 データエクスポート</button>
+                <div class="import-control">
+                    <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                    <button id="import-data-button" class="action-button primary-outline">📥 データインポート</button>
+                    <span id="import-file-name" class="file-name-display">ファイル未選択</span>
+                </div>
+            </div>
+        </section>
+        
+        <div id="quick-sort-buttons" class="quick-sort-buttons">
+        </div>
+
+        <section id="plant-controls" class="card secondary-section control-card">
+            <h2>🗂️ カルテ表示設定</h2>
+            <div class="control-group-container">
+                <div class="control-group">
+                    <label for="sort-select">並び替え:</label>
+                    <select id="sort-select">
+                        <option value="nextWateringDate">💧 次回水やりが近い順 (デフォルト)</option>
+                        <option value="name">🌱 名前順</option>
+                        <option value="entryDate">📅 登録日（新しい順）</option>
+                        <option value="minTemp">🌡️ 最低越冬温度が低い順</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="filter-select">フィルタリング (最低越冬温度):</label>
+                    <select id="filter-select">
+                        <option value="all">すべて表示</option>
+                        <option value="temp10">最低10℃以上</option>
+                        <option value="temp5">最低5℃以上</option>
+                        <option value="temp0">最低0℃以上 (耐寒性あり)</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section id="plant-card-list">
+            <h2>📝 登録済みの植物 (カルテ)</h2>
+        </section>
+    </main>
+    
+    <!-- 詳細モーダル -->
+    <div id="details-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            
+            <!-- 🌟 モーダルナビゲーションボタンの追加 -->
+            <button id="prev-plant-btn" class="modal-nav-btn prev-btn" title="前の植物へ">◀</button>
+            <button id="next-plant-btn" class="modal-nav-btn next-btn" title="次の植物へ">▶</button>
+            
+            <div id="plant-details">
+                </div>
+            
+            <div class="user-data-section">
+                <h2>マイカルテ情報</h2>
+                <p><strong>登録日:</strong> <span id="entry-date-display">未設定</span> (<span id="time-since-entry-display"></span>)</p>
+                <p><strong>購入日:</strong> <span id="purchase-date-display">未設定</span></p>
+                <p><strong>直近の植え替え日:</strong> <span id="repotting-date-display">未設定</span></p>
+                
+                <div id="water-done-in-detail"></div>
+                <div class="detail-actions">
+                    <button id="edit-purchase-date-button" class="action-button tertiary">購入日を記録/変更</button>
+                    <button id="edit-repotting-date-button" class="action-button tertiary">植え替え記録を追加</button>
+                </div>
+            </div>
+            
+            <!-- 🌟 改善: アコーディオン化のためのラッパー -->
+            <div id="season-care-wrapper" class="accordion-item">
+                <button class="accordion-header" data-target="season-care-content"><h3>現在の季節別ケア</h3></button>
+                <div id="season-care-content" class="accordion-content">
+                    <!-- contents are dynamically loaded -->
+                </div>
+            </div>
+            
+            <div id="basic-maintenance-wrapper" class="accordion-item">
+                <button class="accordion-header collapsed" data-target="basic-maintenance-content"><h3>基本情報・年間メンテナンス</h3></button>
+                <div id="basic-maintenance-content" class="accordion-content">
+                    <!-- contents are dynamically loaded -->
+                </div>
+            </div>
+            
+            <div id="water-history-section" class="detail-section">
+                <button class="accordion-header collapsed" data-target="water-history-list"><h3>💧 水やり履歴 (ログ)</h3></button>
+                <ul id="water-history-list" class="water-history-list accordion-content">
+                    </ul>
+            </div>
+            
+            <div id="repotting-history-section" class="detail-section">
+                <button class="accordion-header collapsed" data-target="repotting-history-list"><h3>🪴 植え替え履歴</h3></button>
+                <ul id="repotting-history-list" class="water-history-list accordion-content">
+                    </ul>
+            </div>
+
+        </div>
+    </div>
+    
+    <!-- 購入日入力モーダル (変更なし) -->
+    <div id="purchase-date-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button-purchase-date">&times;</span>
+            <h2>購入日の記録</h2>
+            <label for="purchase-date-input">日付:</label>
+            <input type="date" id="purchase-date-input" required>
+            <button id="save-purchase-date-button" class="action-button primary">保存</button>
+        </div>
+    </div>
+    
+    <!-- 植え替え日入力モーダル (変更なし) -->
+    <div id="repotting-date-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button-repotting-date">&times;</span>
+            <h2>植え替え記録の追加</h2>
+            <label for="repotting-date-input">日付:</label>
+            <input type="date" id="repotting-date-input" required>
+            <button id="save-repotting-date-button" class="action-button primary">記録を追加</button>
+        </div>
+    </div>
+    
+    <!-- 水やり内容選択モーダル (変更なし) -->
+    <div id="water-type-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button-water-type">&times;</span>
+            <h2 id="water-type-modal-title">「植物名」の水やり内容</h2>
+            <p><strong>日付: </strong><span id="water-date-display">今日</span></p>
+            <div id="water-type-options" class="water-type-options-container">
+                </div>
+            <p style="margin-top: 20px;">※水やり日を変更したい場合は、カルテ新規登録フォームから設定してください。</p>
+        </div>
+    </div>
+    
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script src="sw.js"></script>
+</body>
+</html>
